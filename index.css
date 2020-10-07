@@ -12,7 +12,6 @@ body{
     display: flex;
     flex-flow: column;
     align-self: center;
-    padding: 50px 0 20px;
 }
 
 #title{
