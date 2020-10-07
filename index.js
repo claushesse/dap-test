@@ -47,7 +47,7 @@ cambio.addEventListener('click', () => {
                 type: 'linear',
                 ticks: {
                     beginAtZero: true,
-                    suggestedMax: 7
+                    suggestedMax: 5
                 }
             }]
           }
