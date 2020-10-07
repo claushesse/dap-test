@@ -11,7 +11,8 @@ const basefreq = document.getElementById('basefreq'),
 
 let baseFrequency,
     altFrequency,
-    data = [];
+    data = [],
+    myChart;
 
 osc.type = 'sine';
 osc.connect(gain);
@@ -27,7 +28,7 @@ start.addEventListener('click', () => {
 cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
     data.push({x: baseFrequency, y: altFrequency - baseFrequency})
-    new Chart(ctx, {
+    myChart = new Chart(ctx, {
       type: 'line',
       data: {
           datasets: [{
@@ -63,6 +64,8 @@ cambio.addEventListener('click', () => {
 
 reset.addEventListener('click', () => {
   result.innerHTML = "";
+  data = [];
+  myChart.clear();
 });
 
 function startSound(){
