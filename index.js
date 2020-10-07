@@ -6,9 +6,12 @@ const basefreq = document.getElementById('basefreq'),
       result = document.getElementById('result'),
       audioContext = new (window.AudioContext || window.webkitAudioContext)(),
       osc = audioContext.createOscillator(),
-      gain = audioContext.createGain();
+      gain = audioContext.createGain(),
+      ctx = document.getElementById('myChart').getContext('2d');
 
-let baseFrequency, altFrequency;
+let baseFrequency,
+    altFrequency,
+    data = [];
 
 osc.type = 'sine';
 osc.connect(gain);
@@ -23,6 +26,33 @@ start.addEventListener('click', () => {
 
 cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
+    data.push({x: baseFrequency, y: altFrequency - baseFrequency})
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+          datasets: [{
+              label: 'ADP TEST RESULTS',
+              lineTension: 0,
+              data: data
+          }]
+      },
+      options: {
+          scales: {
+              xAxes: [{
+                  type: 'linear',
+                  position: 'bottom'
+              }],
+              yAxes: [{
+                type: 'linear',
+                ticks: {
+                    beginAtZero: true,
+                    suggestedMax: 7
+                }
+            }]
+          }
+      }
+    });
+
     let resultDiv = document.createElement("div");
     resultDiv.classList.add("result")
     let noteName = document.createTextNode(`DAP for base freq ${baseFrequency} Hz is: ${altFrequency - baseFrequency} Hz`);

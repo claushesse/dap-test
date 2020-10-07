@@ -36,3 +36,13 @@ button{
     padding: 20px;
     align-self: center;
 }
+
+.result{
+    margin-top: 5px;
+}
+
+#myChart{
+    align-self: center;
+    max-width: 500px;
+    max-height: 500px;
+}
