@@ -27,7 +27,8 @@ start.addEventListener('click', () => {
 
 cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
-    data.push({x: baseFrequency, y: altFrequency - baseFrequency})
+    let difference = Math.abs(altFrequency - baseFrequency)
+    data.push({x: baseFrequency, y: difference})
     myChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -56,7 +57,7 @@ cambio.addEventListener('click', () => {
 
     let resultDiv = document.createElement("div");
     resultDiv.classList.add("result")
-    let noteName = document.createTextNode(`DAP for base freq ${baseFrequency} Hz is: ${altFrequency - baseFrequency} Hz`);
+    let noteName = document.createTextNode(`DAP for base freq ${baseFrequency} Hz is: ${difference} Hz`);
     resultDiv.appendChild(noteName);
     result.appendChild(resultDiv);
   }
