@@ -3,25 +3,31 @@ const basefreq = document.getElementById('basefreq'),
       start = document.getElementById('start'),
       cambio = document.getElementById('cambio'),
       reset = document.getElementById('reset'),
-      result = document.getElementById('result'),
+      results = document.getElementById('result'),
       audioContext = new (window.AudioContext || window.webkitAudioContext)(),
       osc = audioContext.createOscillator(),
       gain = audioContext.createGain(),
       lowChart = document.getElementById('lowChart').getContext('2d'),
       lowMidChart = document.getElementById('lowMidChart').getContext('2d'),
       highMidChart = document.getElementById('highMidChart').getContext('2d'),
-      highChart = document.getElementById('highChart').getContext('2d');
+      highChart = document.getElementById('highChart').getContext('2d'),
+      L_STR = 'LOW',
+      L_M_STR = 'LOW MID',
+      H_M_STR = 'HIGH MID',
+      H_STR = 'HIGH',
+      instances = {
+        lowInstance: '',
+        lowMidInstance: '',
+        highMidInstance: '',
+        highInstance: ''
+      };
 
 let baseFrequency,
     altFrequency,
     lowData = [],
     lowMidData = [],
     highMidData = [],
-    highData = [],
-    lowInstance,
-    lowMidInstance,
-    highMidIntance,
-    highInstance;
+    highData = [];
 
 osc.type = 'sine';
 osc.connect(gain);
@@ -38,123 +44,27 @@ cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
     let difference = Math.abs(altFrequency - baseFrequency)
     if(baseFrequency < 300 && baseFrequency > 0){
-      lowData.push({x: baseFrequency, y: difference})
-      lowInstance = new Chart(lowChart, {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'JND LOW FREQ.',
-                lineTension: 0,
-                data: lowData
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }],
-                yAxes: [{
-                  type: 'linear',
-                  ticks: {
-                      beginAtZero: true,
-                      suggestedMax: 5
-                  }
-              }]
-            }
-        }
-      });
+      makeChart('lowInstance', lowChart, difference, baseFrequency, L_STR, lowData);
     }
-    if(baseFrequency >= 300 && baseFrequency < 1200){
-      lowMidData.push({x: baseFrequency, y: difference})
-      lowMidInstance = new Chart(lowMidChart, {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'JND LOW MID FREQ.',
-                lineTension: 0,
-                data: lowMidData
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }],
-                yAxes: [{
-                  type: 'linear',
-                  ticks: {
-                      beginAtZero: true,
-                      suggestedMax: 5
-                  }
-              }]
-            }
-        }
-      });
+    else if(baseFrequency >= 300 && baseFrequency < 1200){
+      makeChart('lowMidInstance', lowMidChart, difference, baseFrequency, L_M_STR, lowMidData);
     }
-    if(baseFrequency >= 1200 && baseFrequency < 5000){
-      highMidData.push({x: baseFrequency, y: difference})
-      highMidIntance = new Chart(highMidChart, {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'JND HIGH MID FREQ.',
-                lineTension: 0,
-                data: highMidData
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }],
-                yAxes: [{
-                  type: 'linear',
-                  ticks: {
-                      beginAtZero: true,
-                      suggestedMax: 5
-                  }
-              }]
-            }
-        }
-      });
+    else if(baseFrequency >= 1200 && baseFrequency < 5000){
+      makeChart('highMidInstance', highMidChart, difference, baseFrequency, H_M_STR, highMidData);
     }
-    if(baseFrequency >= 5000 && baseFrequency < 20000){
-      highData.push({x: baseFrequency, y: difference})
-      highMidIntance = new Chart(highChart, {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'JND HIGH FREQ.',
-                lineTension: 0,
-                data: highData
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }],
-                yAxes: [{
-                  type: 'linear',
-                  ticks: {
-                      beginAtZero: true,
-                      suggestedMax: 5
-                  }
-              }]
-            }
-        }
-      });
+    else if(baseFrequency >= 5000 && baseFrequency < 20000){
+      makeChart('highInstance', highChart, difference, baseFrequency, H_STR, highData);
     }
 
-    let resultDiv = document.createElement("div");
-    resultDiv.classList.add("result")
-    let noteName = document.createTextNode(`DAP for base freq ${baseFrequency} Hz is: ${difference} Hz`);
-    resultDiv.appendChild(noteName);
-    result.appendChild(resultDiv);
+    check = document.getElementById(`${baseFrequency}`);
+    if(!check){
+      let resultDiv = document.createElement("div");
+      resultDiv.classList.add("result")
+      resultDiv.setAttribute("id", `${baseFrequency}`);
+      let noteName = document.createTextNode(`JND for base freq ${baseFrequency} Hz is: ${difference} Hz`);
+      resultDiv.appendChild(noteName);
+      results.appendChild(resultDiv);
+    }
   }
 });
 
@@ -164,10 +74,12 @@ reset.addEventListener('click', () => {
   lowMidData = [];
   highMidData = [];
   highData = [];
-  lowChart.clear();
-  lowMidChart.clear();
-  highMidChart.clear();
-  highChart.clear();
+
+  for(let instance in instances){
+    if(instances[instance]){
+      instances[instance].clear();
+    }
+  }
 });
 
 function startSound(){
@@ -192,3 +104,38 @@ function startSound(){
     }, 5000);
   }, 5000);
 };
+
+function makeChart(instance, chart, dif, baseFreq, label, data){
+  const check = data.findIndex(node => {
+    return node.x === baseFreq;
+  }) === -1;
+  
+  if(check){
+    data.push({x: baseFreq, y: dif})
+    instances[instance] = new Chart(chart, {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: `JND ${label} FREQ.`,
+          lineTension: 0,
+          data: data
+        }]
+      },
+      options: {
+        scales: {
+          xAxes: [{
+            type: 'linear',
+            position: 'bottom'
+          }],
+          yAxes: [{
+            type: 'linear',
+            ticks: {
+              beginAtZero: true,
+              suggestedMax: 5
+            }
+          }]
+        }
+      }
+    });
+  }
+}
