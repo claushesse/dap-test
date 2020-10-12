@@ -6,20 +6,23 @@
     <link rel="stylesheet" href="index.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
     <script defer src="index.js"></script>
-    <title>DAP TEST</title>
+    <title>JND TEST</title>
 </head>
 <body>
     <div id="container">
-        <h1 id="title">DAP TEST</h1>
+        <h1 id="title">JND TEST</h1>
         <label for="basefreq">Base Frequency</label>
         <input type="text" id="basefreq" name="basefreq">
         <label for="altfreq">Alt Frequency</label>
         <input type="text" id="altfreq" name="altfreq">
         <button id="start">START</button>
-        <button id="cambio">RECONOCE CAMBIO</button>
+        <button id="cambio">RECOGNIZE CHANGE</button>
         <button id="reset">RESET</button>
     </div>
     <div id="result"></div>
-    <canvas id="myChart" width="400" height="400"></canvas>
+    <canvas id="lowChart" class="graph" width="400" height="400"></canvas>
+    <canvas id="lowMidChart" class="graph" width="400" height="400"></canvas>
+    <canvas id="highMidChart" class="graph" width="400" height="400"></canvas>
+    <canvas id="highChart" class="graph" width="400" height="400"></canvas>
 </body>
 </html>

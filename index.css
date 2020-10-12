@@ -41,8 +41,9 @@ button{
     margin-top: 5px;
 }
 
-#myChart{
+.graph{
     align-self: center;
     max-width: 500px;
     max-height: 500px;
+    margin-top: 5px;
 }

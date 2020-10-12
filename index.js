@@ -7,12 +7,21 @@ const basefreq = document.getElementById('basefreq'),
       audioContext = new (window.AudioContext || window.webkitAudioContext)(),
       osc = audioContext.createOscillator(),
       gain = audioContext.createGain(),
-      ctx = document.getElementById('myChart').getContext('2d');
+      lowChart = document.getElementById('lowChart').getContext('2d'),
+      lowMidChart = document.getElementById('lowMidChart').getContext('2d'),
+      highMidChart = document.getElementById('highMidChart').getContext('2d'),
+      highChart = document.getElementById('highChart').getContext('2d');
 
 let baseFrequency,
     altFrequency,
-    data = [],
-    myChart;
+    lowData = [],
+    lowMidData = [],
+    highMidData = [],
+    highData = [],
+    lowInstance,
+    lowMidInstance,
+    highMidIntance,
+    highInstance;
 
 osc.type = 'sine';
 osc.connect(gain);
@@ -28,32 +37,118 @@ start.addEventListener('click', () => {
 cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
     let difference = Math.abs(altFrequency - baseFrequency)
-    data.push({x: baseFrequency, y: difference})
-    myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          datasets: [{
-              label: 'ADP TEST RESULTS',
-              lineTension: 0,
-              data: data
-          }]
-      },
-      options: {
-          scales: {
-              xAxes: [{
-                  type: 'linear',
-                  position: 'bottom'
-              }],
-              yAxes: [{
-                type: 'linear',
-                ticks: {
-                    beginAtZero: true,
-                    suggestedMax: 5
-                }
+    if(baseFrequency < 300 && baseFrequency > 0){
+      lowData.push({x: baseFrequency, y: difference})
+      lowInstance = new Chart(lowChart, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'JND LOW FREQ.',
+                lineTension: 0,
+                data: lowData
             }]
-          }
-      }
-    });
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }],
+                yAxes: [{
+                  type: 'linear',
+                  ticks: {
+                      beginAtZero: true,
+                      suggestedMax: 5
+                  }
+              }]
+            }
+        }
+      });
+    }
+    if(baseFrequency >= 300 && baseFrequency < 1200){
+      lowMidData.push({x: baseFrequency, y: difference})
+      lowMidInstance = new Chart(lowMidChart, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'JND LOW MID FREQ.',
+                lineTension: 0,
+                data: lowMidData
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }],
+                yAxes: [{
+                  type: 'linear',
+                  ticks: {
+                      beginAtZero: true,
+                      suggestedMax: 5
+                  }
+              }]
+            }
+        }
+      });
+    }
+    if(baseFrequency >= 1200 && baseFrequency < 5000){
+      highMidData.push({x: baseFrequency, y: difference})
+      highMidIntance = new Chart(highMidChart, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'JND HIGH MID FREQ.',
+                lineTension: 0,
+                data: highMidData
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }],
+                yAxes: [{
+                  type: 'linear',
+                  ticks: {
+                      beginAtZero: true,
+                      suggestedMax: 5
+                  }
+              }]
+            }
+        }
+      });
+    }
+    if(baseFrequency >= 5000 && baseFrequency < 20000){
+      highData.push({x: baseFrequency, y: difference})
+      highMidIntance = new Chart(highChart, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'JND HIGH FREQ.',
+                lineTension: 0,
+                data: highData
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom'
+                }],
+                yAxes: [{
+                  type: 'linear',
+                  ticks: {
+                      beginAtZero: true,
+                      suggestedMax: 5
+                  }
+              }]
+            }
+        }
+      });
+    }
 
     let resultDiv = document.createElement("div");
     resultDiv.classList.add("result")
@@ -65,8 +160,14 @@ cambio.addEventListener('click', () => {
 
 reset.addEventListener('click', () => {
   result.innerHTML = "";
-  data = [];
-  myChart.clear();
+  lowData = [];
+  lowMidData = [];
+  highMidData = [];
+  highData = [];
+  lowChart.clear();
+  lowMidChart.clear();
+  highMidChart.clear();
+  highChart.clear();
 });
 
 function startSound(){
