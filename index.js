@@ -7,27 +7,12 @@ const basefreq = document.getElementById('basefreq'),
       audioContext = new (window.AudioContext || window.webkitAudioContext)(),
       osc = audioContext.createOscillator(),
       gain = audioContext.createGain(),
-      lowChart = document.getElementById('lowChart').getContext('2d'),
-      lowMidChart = document.getElementById('lowMidChart').getContext('2d'),
-      highMidChart = document.getElementById('highMidChart').getContext('2d'),
-      highChart = document.getElementById('highChart').getContext('2d'),
-      L_STR = 'LOW',
-      L_M_STR = 'LOW MID',
-      H_M_STR = 'HIGH MID',
-      H_STR = 'HIGH',
-      instances = {
-        lowInstance: '',
-        lowMidInstance: '',
-        highMidInstance: '',
-        highInstance: ''
-      };
+      chart = document.getElementById('chart').getContext('2d');
 
 let baseFrequency,
     altFrequency,
-    lowData = [],
-    lowMidData = [],
-    highMidData = [],
-    highData = [];
+    chartInstance,
+    data = [];
 
 osc.type = 'sine';
 osc.connect(gain);
@@ -43,17 +28,9 @@ start.addEventListener('click', () => {
 cambio.addEventListener('click', () => {
   if(!isNaN(baseFrequency - altFrequency)){
     let difference = Math.abs(altFrequency - baseFrequency)
-    if(baseFrequency < 300 && baseFrequency > 0){
-      makeChart('lowInstance', lowChart, difference, baseFrequency, L_STR, lowData);
-    }
-    else if(baseFrequency >= 300 && baseFrequency < 1200){
-      makeChart('lowMidInstance', lowMidChart, difference, baseFrequency, L_M_STR, lowMidData);
-    }
-    else if(baseFrequency >= 1200 && baseFrequency < 5000){
-      makeChart('highMidInstance', highMidChart, difference, baseFrequency, H_M_STR, highMidData);
-    }
-    else if(baseFrequency >= 5000 && baseFrequency < 20000){
-      makeChart('highInstance', highChart, difference, baseFrequency, H_STR, highData);
+    if(baseFrequency >= 20 && baseFrequency <= 20000){
+      console.log('ENTRE')
+      makeChart(chartInstance, chart, difference, baseFrequency, 'JND RESULTS', data);
     }
 
     check = document.getElementById(`${baseFrequency}`);
@@ -75,10 +52,8 @@ reset.addEventListener('click', () => {
   highMidData = [];
   highData = [];
 
-  for(let instance in instances){
-    if(instances[instance]){
-      instances[instance].clear();
-    }
+  if(chartInstance){
+    chartInstance.clear()
   }
 });
 
@@ -112,7 +87,7 @@ function makeChart(instance, chart, dif, baseFreq, label, data){
   
   if(check){
     data.push({x: baseFreq, y: dif})
-    instances[instance] = new Chart(chart, {
+    instance = new Chart(chart, {
       type: 'line',
       data: {
         datasets: [{
@@ -125,7 +100,11 @@ function makeChart(instance, chart, dif, baseFreq, label, data){
         scales: {
           xAxes: [{
             type: 'linear',
-            position: 'bottom'
+            position: 'bottom',
+            ticks: {
+              beginAtZero: true,
+              suggestedMax: 20000
+            }
           }],
           yAxes: [{
             type: 'linear',
